@@ -4,5 +4,5 @@ Package.describe({
 
 Package.on_use(function (api) {
     api.use(['templating'], 'client');
-    api.add_files('intercom.v1.js', 'client');
+    api.add_files('intercom-fetch.js', 'client');
 });
