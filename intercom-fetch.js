@@ -12,11 +12,13 @@ var x=document.getElementsByTagName('script')[0];
 x.parentNode.insertBefore(s,x);
 
 function loaded() {
-	Session.set('intercomLoaded', true)
+  Meteor.startup(function() {
+    Session.set('intercomLoaded', true)
+  })
 }
 if(s.attachEvent){
-	s.attachEvent('onload', loaded);
+  s.attachEvent('onload', loaded);
 }else{
-	s.addEventListener('load',loaded,false);
+  s.addEventListener('load',loaded,false);
 }
 
