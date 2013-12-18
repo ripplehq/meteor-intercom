@@ -10,33 +10,32 @@ We've been careful to put the Intercom app token and app secret into Meteor's se
 ## Installation
 
 1. Clone this package as a submodule into your `packages` folder.
-2. Set a Meteor setting called `INTERCOM_APP_TOKEN` and `INTERCOM_APP_SECRET`.
-3. Call the `boot` method of `window.Intercom` when your app loads, e.g in `client/_init.js`:
+2. Set a server only setting called `INTERCOM_APP_SECRET` and a public setting called `INTERCOM_APP_TOKEN`.
+```
+{
+  INTERCOM_APP_SECRET : 'your secret',
+  public : {
+    INTERCOM_APP_TOKEN: 'your token',
+  }
+}
+```
+
+3. Call the `boot` method of `window.Intercom` when your app loads, e.g in `client/lib/intercom.js`:
 
 ```
-/*
- * Fetch the setting INTERCOM_APP_TOKEN since it's only
- * available server-side.
- */
-Meteor.call('getIntercomToken', function(err, result) {
-  if (!err && result) {
-    Meteor.settings = {};
-    Meteor.settings.INTERCOM_APP_TOKEN = result;
-    Deps.autorun(function() {
-      if (Meteor.userId() &&
-          Session.get('intercomLoaded') &&
-          TeamsHandle.ready()) {
-        window.Intercom('boot', getUserDataForIntercom());
-      }
-    });
+Deps.autorun(function() {
+  if (Meteor.userId() &&
+      Session.get('intercomLoaded') &&
+      TeamsHandle.ready()) {
+    window.Intercom('boot', getUserDataForIntercom());
   }
 });
+
 ```
 
 NOTE: Rename or delete `TeamsHandle.ready()` if you're not using teams/companies or calling it something else.
 
-4. You'll need a corresponding server-side method that exposes `Meteor.settings.INTERCOM_APP_TOKEN`, called `getIntercomToken`.
-5. Create the `getUserDataForIntercom()` function where you provide a plain object with whatever info you want to Intercom, including your `app_id`, etc.
+5. Create the `getUserDataForIntercom()` function on the client from which you return an object with whatever info you want to send to Intercom, including your `app_id` that your get from Meteor.settings.public.INTERCOM_APP_TOKEN, etc.
 6. Create the hashes for each of your users. Put this in a method and call it from the client or run it somewhere you can execute JS on the server:
 
 ```
